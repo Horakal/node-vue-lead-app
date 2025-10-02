@@ -25,7 +25,7 @@ app.use(globalLimiter);
 if (process.env.NODE_ENV === "production") {
   app.use(
     cors({
-      origin: "",
+      origin: process.env.PROD_CLIENT_URL,
       credentials: true,
     })
   );
