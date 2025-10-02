@@ -24,7 +24,7 @@ npm install
 ```
 
 2) Variáveis de ambiente
-Crie um arquivo `.env` (não commitá-lo) ou exporte as variáveis necessárias. Exemplos de variáveis usadas no projeto:
+Crie um arquivo `.env` ou exporte as variáveis necessárias. Exemplos de variáveis usadas no projeto:
 
 - `PORT` — porta que o servidor deve escutar (ex.: 4000)
 - `MONGO_INITDB_ROOT_USERNAME`, `MONGO_INITDB_ROOT_PASSWORD` — usados no `docker-compose` para o container do Mongo;
@@ -33,7 +33,7 @@ Crie um arquivo `.env` (não commitá-lo) ou exporte as variáveis necessárias.
 
 O projeto também usa `@dotenvx/dotenvx` para carregar variáveis em desenvolvimento.
 
-3) Rodar em dev:
+1) Rodar em dev:
 
 ```powershell
 npm run dev
@@ -109,12 +109,6 @@ CORS
 Persistência de tracking (UTM/gclid/fbclid)
 - O frontend persiste automaticamente parâmetros de campanha (utm_source, utm_medium, utm_campaign, utm_term, utm_content, gclid, fbclid) em `localStorage` e os reenvia quando o formulário de lead é submetido.
 
-Observações sobre deploy (Render / produção)
-- Ajustes recomendados:
-	- Backend: use um Dockerfile multi-stage para compilar TypeScript e executar `node dist/server.js` (não executar `ts-node` em produção). Garanta que o server leia `process.env.PORT`.
-	- Frontend: build com `vite build` e servir os arquivos estáticos (nginx ou `serve`) — não use `vite dev` em produção.
-	- Configure secrets (MONGO URI, JWT secret, etc.) via painel de variáveis de ambiente no provedor (Render) e não commitá-los.
-
 Onde olhar no código
 - `src/app.ts` — configuração do Express (CORS, cookieParser, rate limiter global).
 - `src/routes/clientLeadRoute.ts` — rotas relacionadas a leads.
@@ -126,5 +120,3 @@ Contribuição e manutenção
 - Para rodar localmente use o `docker-compose.yml` ou os scripts `npm run dev` / `npm run build` + `npm start`.
 - Adicione testes e cobertura conforme for necessário; atualmente não há testes automatizados nesta pasta.
 
-Contato
-- Se quiser que eu ajuste o Dockerfile para produção (multi-stage) e as variáveis necessárias para deploy no Render, posso aplicar as mudanças e deixar exemplos prontos.
