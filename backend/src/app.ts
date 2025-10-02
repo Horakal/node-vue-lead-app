@@ -22,6 +22,7 @@ const globalLimiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(globalLimiter);
+console.log("CORS allowed origins from env:", process.env.PROD_CLIENT_URL);
 // Build allowed origins list from env; allow comma-separated values and simple '*' wildcard
 const rawAllowed = (
   process.env.PROD_CLIENT_URL ||
