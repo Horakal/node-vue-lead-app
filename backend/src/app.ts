@@ -22,27 +22,56 @@ const globalLimiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(globalLimiter);
-if (process.env.NODE_ENV === "production") {
+// Build allowed origins list from env; allow comma-separated values and simple '*' wildcard
+const rawAllowed = (
+  process.env.PROD_CLIENT_URL ||
+  process.env.LOCAL_CLIENT_URL ||
+  ""
+)
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+function originAllowedFactory(allowedList: string[]) {
+  // convert wildcard patterns (like https://*.example.com) into RegExp
+  const patterns = allowedList.map((p) => {
+    if (p.includes("*")) {
+      const re =
+        "^" +
+        p.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\\\*/g, ".*") +
+        "$";
+      return new RegExp(re);
+    }
+    return p;
+  });
+  return (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
+    if (!origin) return callback(null, true);
+    if (allowedList.includes(origin)) return callback(null, true);
+    for (const pat of patterns) {
+      if (pat instanceof RegExp && pat.test(origin))
+        return callback(null, true);
+    }
+    callback(new Error("Not allowed by CORS"));
+  };
+}
+
+const allowedOriginsList = rawAllowed;
+// use same logic for both production and non-production: if list is empty allow all (dev)
+if (!allowedOriginsList || allowedOriginsList.length === 0) {
+  // allow any origin (useful for dev); in production prefer to set PROD_CLIENT_URL
   app.use(
     cors({
-      origin: process.env.PROD_CLIENT_URL,
+      origin: true,
       credentials: true,
     })
   );
 } else {
-  const allowedOrigins = [
-    process.env.LOCAL_CLIENT_URL,
-    process.env.PROD_CLIENT_URL,
-  ];
   app.use(
     cors({
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
-      },
+      origin: originAllowedFactory(allowedOriginsList),
       credentials: true,
     })
   );
