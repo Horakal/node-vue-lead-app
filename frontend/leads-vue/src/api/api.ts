@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.API_URL || 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_API_BASE || 'http://localhost:4000',
   withCredentials: true,
 })
 
