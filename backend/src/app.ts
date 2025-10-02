@@ -4,14 +4,15 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { clientLeadRoute } from "./routes/clientLeadRoute";
 import { authRoute } from "./routes/authRoute";
+import connectDb from "./tools/db";
+
 require("@dotenvx/dotenvx").config();
-const connectDb = require("./tools/db");
 
 const app = express();
 app.use(express.json());
 // If running behind a proxy (e.g., Render, Heroku) enable trust proxy so rate limiter
 // and other middlewares can read the real client IP from X-Forwarded-For
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // Global rate limiter: conservative default to protect basic endpoints
 const globalLimiter = rateLimit({
@@ -19,8 +20,8 @@ const globalLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
-})
-app.use(globalLimiter)
+});
+app.use(globalLimiter);
 if (process.env.NODE_ENV === "production") {
   app.use(
     cors({
