@@ -4,6 +4,12 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+ARG VITE_API_BASE
+ENV VITE_API_BASE=${VITE_API_BASE}
+
+RUN if [ -n "$VITE_API_BASE" ]; then echo "VITE_API_BASE=$VITE_API_BASE" > .env; fi
+
+# Run build
 RUN npm run build-only
 
 # production stage
