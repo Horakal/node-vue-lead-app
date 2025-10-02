@@ -2,7 +2,7 @@ import e from "express";
 import express, { Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import { authenticateToken } from "../middlewares/authToken";
-const authController = require("../controllers/authController");
+import { login } from "../controllers/authController";
 const router = express.Router();
 
 // Apply stricter rate limiting on auth endpoints to mitigate brute-force
@@ -17,9 +17,7 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.post("/api/auth/login", authLimiter, authController.login);
-
-router.post("/api/auth/register", authLimiter, authController.register);
+router.post("/api/auth/login", authLimiter, login);
 
 router.get(
   "/api/protected",
