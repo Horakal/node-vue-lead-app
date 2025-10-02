@@ -32,17 +32,3 @@ export const login = async (req: Request, res: Response) => {
   });
   res.status(200).json({ message: "Login bem-sucedido", token });
 };
-
-export const register = async (req: Request, res: Response) => {
-  const { username, password, email } = req.body;
-
-  const existingUser = await UserModel.findOne({ email });
-  if (existingUser) {
-    return res.status(400).json({ message: "Email já registrado" });
-  }
-
-  const user = new UserModel({ username, password, email });
-  await user.save();
-
-  res.status(201).json({ message: "Usuário registrado com sucesso" });
-};
